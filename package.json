@@ -1,0 +1,20 @@
+{
+  "name": "ray-casting-javascript-engine",
+  "version": "1.0.0",
+  "description": "Creating ray casting engine with JavaScript",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "git push"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/mrcodedev/ray-casting-javascript-engine.git"
+  },
+  "author": "MrCodeDev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/mrcodedev/ray-casting-javascript-engine/issues"
+  },
+  "homepage": "https://gitlab.com/mrcodedev/ray-casting-javascript-engine#readme"
+}
