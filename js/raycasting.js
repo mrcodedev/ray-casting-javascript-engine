@@ -14,6 +14,11 @@ const floorColour = '#666666';
 
 const playerColour = '#FFFFFF';
 
+const visionPlayerColour = '#FFFFFF';
+const widthVisionPlayer = 60;
+
+
+
 
 
 //********************************
@@ -54,9 +59,11 @@ class Level {
     this.heightTiles = parseInt(this.heightCanvas / this.heightMatrix);
   }
 
+  //Dibujamos el nivel
   drawLevel() {
     let colour;
 
+    //Pintamos la matriz asignando color
     for (let y = 0; y < this.heightMatrix; y++) {
       for (let x = 0; x < this.widthMatrix; x++) {
         if (this.levelMatrix[y][x] === 1) {
@@ -77,6 +84,7 @@ class Player {
     this.ctx = ctx;
     this.stage = stage;
 
+    //Donde aparece el jugador
     this.spawnX = spawnX;
     this.spawnY = spawnY;
 
@@ -88,16 +96,78 @@ class Player {
     this.rotationAngle = 0;
 
     //En pixels
-    this.speedMove = 3;
+    this.speedMove = 1;
     //Velocidad de giro y pasamos de radianes a grados
     this.speedRotation = 3 * (Math.PI / 180);
   }
 
+  //Mueve hacia arriba
+  moveUp() {
+    this.move = 1;
+  }
+
+  //Mueve hacia abajo
+  moveDown() {
+    this.move = -1;
+
+  }
+
+  //Mueve hacia la izquierda
+  moveLeft() {
+    this.rotate = -1;
+  }
+
+  //Mueve hacia la derecha
+  moveRight() {
+    this.rotate = 1;
+  }
+
+  //Para el movimiento cuando dejas de presionar arriba o abajo
+  stopMove() {
+    this.move = 0;
+  }
+
+  //Para la rotación cuando dejas de presionar izquierda o derecha
+  stopRotate() {
+    this.rotate = 0;
+  }
+
+  updatePlayerPosition() {
+    //Nos movemos (avanzamos)
+    let newX = this.spawnX + (this.move * Math.cos(this.rotationAngle) * this.speedMove);
+    let newY = this.spawnY + (this.move * Math.sin(this.rotationAngle) * this.speedMove);
+
+    this.spawnX = newX;
+    this.spawnY = newY;
+
+    //Giramos
+    this.rotationAngle += this.rotate * this.speedRotation;
+  }
+
+
+  //Dibujamos al jugador con los datos
   drawPlayer() {
+    this.updatePlayerPosition();
+
     //Asignamos el color
     this.ctx.fillStyle = playerColour;
+
     //Asignamos el tamaño del jugador
     this.ctx.fillRect(this.spawnX - 3, this.spawnY - 3, 6, 6);
+
+    //Para ver la línea de dirección
+    let xDestination = this.spawnX + Math.cos(this.rotationAngle) * widthVisionPlayer;
+    let yDestination = this.spawnY + Math.sin(this.rotationAngle) * widthVisionPlayer;
+
+    //Empezamos a dibujar la linea
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.spawnX, this.spawnY);
+    //Coordenadadas de destino
+    this.ctx.lineTo(xDestination, yDestination);
+    //Dibujamos la linea directamente
+    this.ctx.strokeStyle = visionPlayerColour;
+    this.ctx.stroke();
+
   }
 }
 
@@ -109,7 +179,9 @@ function startEngine() {
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
 
+  //Inicializamos el stage
   stage = new Level(canvas, ctx, levelOne);
+  //Inicializamos el jugador con su posición
   player = new Player(ctx, stage, 100, 100);
 
   //INICIAMOS EL BUCLE PRINCIPAL DEL JUEGO
@@ -119,6 +191,7 @@ function startEngine() {
 }
 
 function cleanCanvas() {
+  //Limpiamos el canvas llamándose a sí mismo
   canvas.width = canvas.width;
   canvas.height = canvas.height;
 }
@@ -128,3 +201,49 @@ function drawEngine() {
   stage.drawLevel();
   player.drawPlayer();
 }
+
+
+//TODO: Para pasar a una clase
+//Creamos un evento que detecte una tecla con arriba, abajo, izquierda y derecha
+//38 Arriba, 40 Abajo, 37 Izquierda y 39 Derecha
+this.document.addEventListener('keydown', (key) => {
+  switch (key.keyCode) {
+    case 38:
+      player.moveUp();
+      break;
+
+    case 40:
+      player.moveDown();
+      break;
+
+    case 37:
+      player.moveLeft();
+      break;
+
+    case 39:
+      player.moveRight();
+      break;
+  }
+
+  //Creamos un evento cuando dejemos de presionar las teclas de movimiento
+  //Dejamos de mover a la arriba y abajo, y paramos de girar a la izquierda o derecha
+  document.addEventListener('keyup', (key) => {
+    switch (key.keyCode) {
+      case 38:
+        player.stopMove();
+        break;
+
+      case 40:
+        player.stopMove();
+        break;
+
+      case 37:
+        player.stopRotate();
+        break;
+
+      case 39:
+        player.stopRotate();
+        break;
+    }
+  })
+});
