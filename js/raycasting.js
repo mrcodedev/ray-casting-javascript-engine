@@ -17,10 +17,6 @@ const playerColour = '#FFFFFF';
 const visionPlayerColour = '#FFFFFF';
 const widthVisionPlayer = 60;
 
-
-
-
-
 //********************************
 //LEVEL 1
 //********************************
@@ -57,6 +53,15 @@ class Level {
     //DIMENSIONES DE LOS TILES
     this.widthTiles = parseInt(this.widthCanvas / this.widthMatrix);
     this.heightTiles = parseInt(this.heightCanvas / this.heightMatrix);
+  }
+
+  detectColisionMap(positionLevelX, positionLevelY) {
+    let crash = false;
+    if (this.levelMatrix[positionLevelY][positionLevelX] !== 0) {
+      crash = true;
+    }
+
+    return crash;
   }
 
   //Dibujamos el nivel
@@ -132,17 +137,35 @@ class Player {
     this.rotate = 0;
   }
 
+  detectColisionPlayer(spawnX, spawnY) {
+    let crash = false;
+
+    //Averiguamos en que casilla está el jugador (box es casilla)
+    let boxX = parseInt(spawnX / this.stage.widthTiles);
+    let boxY = parseInt(spawnY / this.stage.widthTiles);
+
+    if (this.stage.detectColisionMap(boxX, boxY)) {
+      crash = true;
+    }
+
+    return crash;
+  }
+
   updatePlayerPosition() {
     //Nos movemos (avanzamos)
     let newX = this.spawnX + (this.move * Math.cos(this.rotationAngle) * this.speedMove);
     let newY = this.spawnY + (this.move * Math.sin(this.rotationAngle) * this.speedMove);
 
-    this.spawnX = newX;
-    this.spawnY = newY;
+    if (!this.detectColisionPlayer(newX, newY)) {
+      this.spawnX = newX;
+      this.spawnY = newY;
+    }
 
     //Giramos
     this.rotationAngle += this.rotate * this.speedRotation;
   }
+
+
 
 
   //Dibujamos al jugador con los datos
