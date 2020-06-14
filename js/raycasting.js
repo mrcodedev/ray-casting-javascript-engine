@@ -57,9 +57,8 @@ class Level {
 
   detectColisionMap(positionLevelX, positionLevelY) {
     let crash = false;
-    if (this.levelMatrix[positionLevelY][positionLevelX] !== 0) {
-      crash = true;
-    }
+
+    crash = this.levelMatrix[positionLevelY][positionLevelX] !== 0 ? crash = true : crash;
 
     return crash;
   }
@@ -71,11 +70,7 @@ class Level {
     //Pintamos la matriz asignando color
     for (let y = 0; y < this.heightMatrix; y++) {
       for (let x = 0; x < this.widthMatrix; x++) {
-        if (this.levelMatrix[y][x] === 1) {
-          colour = wallColour;
-        } else {
-          colour = floorColour;
-        }
+        colour = this.levelMatrix[y][x] === 1 ? colour = wallColour : colour = floorColour;
 
         this.ctx.fillStyle = colour;
         this.ctx.fillRect(x * this.widthTiles, y * this.heightTiles, this.widthTiles, this.heightTiles);
@@ -144,9 +139,7 @@ class Player {
     let boxX = parseInt(spawnX / this.stage.widthTiles);
     let boxY = parseInt(spawnY / this.stage.widthTiles);
 
-    if (this.stage.detectColisionMap(boxX, boxY)) {
-      crash = true;
-    }
+    crash = this.stage.detectColisionMap(boxX, boxY) ? crash = true : crash;
 
     return crash;
   }
@@ -163,6 +156,7 @@ class Player {
 
     //Giramos
     this.rotationAngle += this.rotate * this.speedRotation;
+    this.rotationAngle = angleNormalizer(this.rotationAngle);
   }
 
 
@@ -190,7 +184,6 @@ class Player {
     //Dibujamos la linea directamente
     this.ctx.strokeStyle = visionPlayerColour;
     this.ctx.stroke();
-
   }
 }
 
@@ -223,6 +216,14 @@ function drawEngine() {
   cleanCanvas();
   stage.drawLevel();
   player.drawPlayer();
+}
+
+function angleNormalizer(angle) {
+  angle = angle % (2 * Math.PI);
+
+  angle = angle < 0 ? angle + (2 * Math.PI) : angle;
+
+  return angle;
 }
 
 
