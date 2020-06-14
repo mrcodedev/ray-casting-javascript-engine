@@ -1,6 +1,7 @@
 let canvas;
 let ctx;
 let stage;
+let player;
 
 const FPS = 50;
 
@@ -11,6 +12,10 @@ const canvasHeight = 500;
 const wallColour = '#000000';
 const floorColour = '#666666';
 
+const playerColour = '#FFFFFF';
+
+
+
 //********************************
 //LEVEL 1
 //********************************
@@ -18,8 +23,8 @@ const floorColour = '#666666';
 const levelOne = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 1, 0, 0, 1, 1, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 1, 1, 0, 0, 1],
   [1, 0, 0, 0, 0, 1, 1, 0, 0, 1],
   [1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
   [1, 0, 0, 1, 1, 1, 0, 0, 0, 1],
@@ -67,6 +72,35 @@ class Level {
   }
 }
 
+class Player {
+  constructor(ctx, stage, spawnX, spawnY) {
+    this.ctx = ctx;
+    this.stage = stage;
+
+    this.spawnX = spawnX;
+    this.spawnY = spawnY;
+
+    // 0 = parado, 1 = adelante, -1 = atrás
+    this.move = 0;
+    // -1 = giro a la izquierda, 1 = giro a la derecha
+    this.rotate = 0;
+
+    this.rotationAngle = 0;
+
+    //En pixels
+    this.speedMove = 3;
+    //Velocidad de giro y pasamos de radianes a grados
+    this.speedRotation = 3 * (Math.PI / 180);
+  }
+
+  drawPlayer() {
+    //Asignamos el color
+    this.ctx.fillStyle = playerColour;
+    //Asignamos el tamaño del jugador
+    this.ctx.fillRect(this.spawnX - 3, this.spawnY - 3, 6, 6);
+  }
+}
+
 function startEngine() {
   canvas = document.getElementById('canvas');
   ctx = canvas.getContext('2d');
@@ -74,7 +108,9 @@ function startEngine() {
   //SETEAR WIDTH Y HEIGHT
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
+
   stage = new Level(canvas, ctx, levelOne);
+  player = new Player(ctx, stage, 100, 100);
 
   //INICIAMOS EL BUCLE PRINCIPAL DEL JUEGO
   setInterval(() => {
@@ -90,4 +126,5 @@ function cleanCanvas() {
 function drawEngine() {
   cleanCanvas();
   stage.drawLevel();
+  player.drawPlayer();
 }
